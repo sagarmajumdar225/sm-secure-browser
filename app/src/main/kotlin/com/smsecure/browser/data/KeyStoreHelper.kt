@@ -4,6 +4,7 @@ import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import timber.log.Timber
 import java.security.KeyStore
 import java.security.SecureRandom
 import javax.crypto.Cipher
@@ -18,15 +19,21 @@ object KeyStoreHelper {
     private const val IV_KEY = "encrypted_db_iv"
 
     fun getPassphrase(context: Context): ByteArray {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val encryptedPass = prefs.getString(PASSPHRASE_KEY, null)
-        val ivString = prefs.getString(IV_KEY, null)
+        return try {
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val encryptedPass = prefs.getString(PASSPHRASE_KEY, null)
+            val ivString = prefs.getString(IV_KEY, null)
 
-        if (encryptedPass != null && ivString != null) {
-            val encryptedBytes = Base64.decode(encryptedPass, Base64.DEFAULT)
-            val iv = Base64.decode(ivString, Base64.DEFAULT)
-            return decryptPassphrase(encryptedBytes, iv)
-        } else {
+            if (encryptedPass != null && ivString != null) {
+                try {
+                    val encryptedBytes = Base64.decode(encryptedPass, Base64.DEFAULT)
+                    val iv = Base64.decode(ivString, Base64.DEFAULT)
+                    return decryptPassphrase(encryptedBytes, iv)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to decrypt DB passphrase, regenerating...")
+                }
+            }
+
             val newPassphrase = ByteArray(32)
             SecureRandom().nextBytes(newPassphrase)
             val (encrypted, iv) = encryptPassphrase(newPassphrase)
@@ -36,7 +43,12 @@ object KeyStoreHelper {
                 .putString(IV_KEY, Base64.encodeToString(iv, Base64.DEFAULT))
                 .apply()
 
-            return newPassphrase
+            newPassphrase
+        } catch (e: Exception) {
+            Timber.e(e, "KeyStore initialization error, using fallback passphrase")
+            val fallback = ByteArray(32)
+            SecureRandom().nextBytes(fallback)
+            fallback
         }
     }
 
