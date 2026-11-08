@@ -39,6 +39,13 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest --no-daemon --console=plain
 
+      - name: Ensure Debug Keystore Exists for Fallback Signing
+        run: |
+          mkdir -p ~/.android
+          mkdir -p ~/.config/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          cp ~/.android/debug.keystore ~/.config/.android/debug.keystore
+
       - name: Build Release APK
         run: ./gradlew assembleRelease --no-daemon --console=plain
 
