@@ -17,9 +17,9 @@ SM Secure Browser is a free, open-source, privacy-first Android web browser buil
 
 2. **Select the APK for your Device Architecture**:
    Under **Assets**, download the APK file for your phone:
-   - 🌟 **`app-arm64-v8a-release.apk`** (**~150 MB**): Recommended for **90%+ of modern Android phones & tablets**.
-   - **`app-armeabi-v7a-release.apk`** (**~120 MB**): For older 32-bit Android phones.
-   - **`app-x86_64-release.apk`** (**~168 MB**): For Chromebooks or Intel Android devices.
+   - 🌟 **`app-arm64-v8a-release.apk`** (**~75 MB**): Recommended for **90%+ of modern Android phones & tablets**.
+   - **`app-armeabi-v7a-release.apk`** (**~72 MB**): For older 32-bit Android phones.
+   - **`app-x86_64-release.apk`** (**~78 MB**): For Chromebooks or Intel Android devices.
 
 3. **Install on Android**:
    Open the downloaded `.apk` file on your Android device and tap **Install** *(if prompted, allow installation from unknown sources in your browser or file manager settings)*.
@@ -32,9 +32,9 @@ Rather than bundling a ~600 MB universal APK containing all 4 CPU architectures,
 
 | Architecture / Artifact | Target Devices | Size |
 |---|---|---|
-| **`app-arm64-v8a-release.apk`** | 90%+ of modern Android phones & tablets | **~150 MB** |
-| **`app-armeabi-v7a-release.apk`** | Legacy 32-bit ARM Android devices | **~120 MB** |
-| **`app-x86_64-release.apk`** | Intel-based Chromebooks & emulators | **~168 MB** |
+| **`app-arm64-v8a-release.apk`** | 90%+ of modern Android phones & tablets | **~75 MB** |
+| **`app-armeabi-v7a-release.apk`** | Legacy 32-bit ARM Android devices | **~72 MB** |
+| **`app-x86_64-release.apk`** | Intel-based Chromebooks & emulators | **~78 MB** |
 
 ---
 
