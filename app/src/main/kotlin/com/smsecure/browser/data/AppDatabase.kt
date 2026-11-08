@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
+import timber.log.Timber
 
 @Database(
     entities = [HistoryEntity::class, BookmarkEntity::class, SiteExceptionEntity::class],
@@ -22,6 +23,13 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
+                try {
+                    // CRITICAL: Load SQLCipher native library before opening encrypted database
+                    System.loadLibrary("sqlcipher")
+                } catch (e: Throwable) {
+                    Timber.e(e, "Error loading SQLCipher native library")
+                }
+
                 val passphrase = KeyStoreHelper.getPassphrase(context)
                 val factory = SupportOpenHelperFactory(passphrase)
                 val instance = Room.databaseBuilder(

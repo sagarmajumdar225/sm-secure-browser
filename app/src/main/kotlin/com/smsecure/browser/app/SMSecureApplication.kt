@@ -16,5 +16,12 @@ class SMSecureApplication : Application() {
                 }
             })
         }
+
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            try {
+                Timber.e(throwable, "Fatal uncaught exception on thread %s", thread.name)
+            } catch (ignored: Exception) {
+            }
+        }
     }
 }
