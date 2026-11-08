@@ -3,7 +3,7 @@ package com.smsecure.browser.privacy
 object FingerprintDefense {
     /**
      * Returns Gecko process arguments to enforce RFP (Resist Fingerprinting), WebRTC IP leak defenses,
-     * cross-site referrer stripping, and disabling all Mozilla telemetry/Glean/crash reports.
+     * cross-site referrer stripping, and disabling all engine diagnostic and health report uploads.
      */
     fun getProcessArguments(): Array<String> {
         return arrayOf(
@@ -15,9 +15,9 @@ object FingerprintDefense {
             "-pref", "media.peerconnection.enabled=false",
             // Pref: media.peerconnection.ice.no_host=true - Prevents WebRTC ICE candidate local IP disclosure
             "-pref", "media.peerconnection.ice.no_host=true",
-            // Pref: toolkit.telemetry.enabled=false - Completely disables Mozilla Telemetry
+            // Pref: toolkit.telemetry.enabled=false - Completely disables diagnostic reporting
             "-pref", "toolkit.telemetry.enabled=false",
-            // Pref: datareporting.healthreport.uploadEnabled=false - Disables Glean health report uploads
+            // Pref: datareporting.healthreport.uploadEnabled=false - Disables health report uploads
             "-pref", "datareporting.healthreport.uploadEnabled=false",
             // Pref: privacy.globalprivacycontrol.enabled=true - Signals Global Privacy Control (GPC) opt-out header
             "-pref", "privacy.globalprivacycontrol.enabled=true"
