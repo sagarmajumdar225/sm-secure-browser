@@ -75,6 +75,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (::tabManager.isInitialized) {
+            tabManager.getActiveSession()?.setActive(true)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (::tabManager.isInitialized) {
+            tabManager.getActiveSession()?.setActive(false)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         if (isFinishing) {

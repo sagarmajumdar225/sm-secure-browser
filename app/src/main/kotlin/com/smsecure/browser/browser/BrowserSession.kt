@@ -163,6 +163,10 @@ class BrowserSession(
         session.stop()
     }
 
+    fun setActive(active: Boolean) {
+        session.setActive(active)
+    }
+
     fun suspend() {
         if (!_isSuspended.value) {
             _isSuspended.value = true
