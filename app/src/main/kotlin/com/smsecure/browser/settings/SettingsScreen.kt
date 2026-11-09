@@ -25,6 +25,7 @@ fun SettingsScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val themeManager = remember { ThemeManager(context) }
+    val torEnabled by themeManager.torEnabled.collectAsState(initial = false)
 
     Scaffold(
         topBar = {
@@ -74,6 +75,42 @@ fun SettingsScreen(
                     scope.launch { themeManager.setThemeMode(ThemeMode.DARK) }
                 }
             )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Text(
+                text = "Network & Proxy",
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Route all traffic and remote DNS through local SOCKS5 proxy (Orbot / Tor on localhost:9050).",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = "Enable Tor / Orbot Proxy Mode", style = MaterialTheme.typography.titleMedium)
+                    Text(text = "Requires Orbot app running locally on port 9050", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Switch(
+                    checked = torEnabled,
+                    onCheckedChange = { checked ->
+                        scope.launch {
+                            themeManager.setTorEnabled(checked)
+                        }
+                    }
+                )
+            }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 

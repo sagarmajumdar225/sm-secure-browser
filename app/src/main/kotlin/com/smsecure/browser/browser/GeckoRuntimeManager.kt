@@ -4,6 +4,7 @@ import android.content.Context
 import com.smsecure.browser.privacy.ContentBlockingMode
 import com.smsecure.browser.privacy.DnsConfig
 import com.smsecure.browser.privacy.EnginePrivacyConfig
+import com.smsecure.browser.privacy.FingerprintDefense
 import org.mozilla.geckoview.GeckoRuntime
 import org.mozilla.geckoview.GeckoRuntimeSettings
 import timber.log.Timber
@@ -11,10 +12,12 @@ import timber.log.Timber
 object GeckoRuntimeManager {
     private var runtime: GeckoRuntime? = null
 
-    fun getRuntime(context: Context, mode: ContentBlockingMode = ContentBlockingMode.STRICT): GeckoRuntime {
+    fun getRuntime(context: Context, mode: ContentBlockingMode = ContentBlockingMode.STRICT, torEnabled: Boolean = false): GeckoRuntime {
         if (runtime == null) {
             try {
                 val settingsBuilder = GeckoRuntimeSettings.Builder()
+                    // API: GeckoRuntimeSettings.Builder.arguments - RFP, HTTPS-Only, Cert Pinning, Tor Proxy
+                    .arguments(FingerprintDefense.getProcessArguments(torEnabled))
                     // API: GeckoRuntimeSettings.Builder.contentBlocking - ETP Strict, dFPI, cookie purging
                     .contentBlocking(EnginePrivacyConfig.createContentBlockingSettings(mode))
                     // API: GeckoRuntimeSettings.Builder.aboutConfigEnabled

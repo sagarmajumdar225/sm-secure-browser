@@ -1,6 +1,7 @@
 package com.smsecure.browser.app
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,6 +16,8 @@ import androidx.compose.ui.Modifier
 import com.smsecure.browser.browser.TabManager
 import com.smsecure.browser.settings.ThemeManager
 import com.smsecure.browser.settings.ThemeMode
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -24,8 +27,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        tabManager = TabManager(applicationContext)
+        // Enforce FLAG_SECURE to prevent background screenshots and recent task thumbnail leaks
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+
         themeManager = ThemeManager(applicationContext)
+        val initialTor = runBlocking { themeManager.torEnabled.first() }
+
+        tabManager = TabManager(applicationContext, torEnabled = initialTor)
 
         if (tabManager.sessions.value.isEmpty()) {
             tabManager.createNewTab("https://duckduckgo.com")

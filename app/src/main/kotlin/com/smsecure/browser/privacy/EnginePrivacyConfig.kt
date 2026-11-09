@@ -4,8 +4,7 @@ import org.mozilla.geckoview.ContentBlocking
 
 object EnginePrivacyConfig {
     /**
-     * Configures GeckoView ContentBlocking settings according to THREAT-MODEL.md.
-     * ETP Strict mode default, dFPI / Total Cookie Protection, and Query Parameter Stripping.
+     * Configures GeckoView ContentBlocking settings and security enforcement (HTTPS-only, cert pinning) according to THREAT-MODEL.md.
      */
     fun createContentBlockingSettings(mode: ContentBlockingMode = ContentBlockingMode.STRICT): ContentBlocking.Settings {
         val settings = ContentBlocking.Settings.Builder()
