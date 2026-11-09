@@ -49,7 +49,7 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(scrollState) // FIX: Makes the entire settings panel fully scrollable
+                .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
             Text(
@@ -91,7 +91,7 @@ fun SettingsScreen(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Enforce GeckoView ContentBlocking rules to block ads, analytics trackers, social scripts, and cryptominers.",
+                text = "Enforce GeckoView ContentBlocking rules to block ads, data collectors, social scripts, and cryptominers.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
