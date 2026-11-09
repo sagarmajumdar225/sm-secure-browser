@@ -4,6 +4,7 @@ import android.content.Context
 import com.smsecure.browser.data.AppDatabase
 import com.smsecure.browser.data.HistoryEntity
 import com.smsecure.browser.util.DownloadHelper
+import com.smsecure.browser.util.UrlSanitizer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,8 @@ import org.mozilla.geckoview.WebResponse
 
 class BrowserSession(
     val id: String = java.util.UUID.randomUUID().toString(),
-    val session: GeckoSession = GeckoSession()
+    val session: GeckoSession = GeckoSession(),
+    val isEphemeral: Boolean = false
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -80,7 +82,8 @@ class BrowserSession(
                 _isLoading.value = false
                 _progress.value = 100
 
-                if (success && _url.value.isNotBlank() && !_url.value.startsWith("about:")) {
+                // RAM-Only Ephemeral Mode: bypass writing history to database if isEphemeral is true
+                if (!isEphemeral && success && _url.value.isNotBlank() && !_url.value.startsWith("about:")) {
                     val currentUrl = _url.value
                     val currentTitle = _title.value.ifBlank { currentUrl }
                     scope.launch {
@@ -134,11 +137,12 @@ class BrowserSession(
     }
 
     fun loadUrl(input: String) {
-        val finalUrl = when {
+        val rawUrl = when {
             input.startsWith("http://") || input.startsWith("https://") -> input
             input.contains(".") && !input.contains(" ") -> "https://$input"
             else -> "https://duckduckgo.com/?q=${java.net.URLEncoder.encode(input, "UTF-8")}"
         }
+        val finalUrl = UrlSanitizer.sanitizeUrl(rawUrl)
         _url.value = finalUrl
         session.loadUri(finalUrl)
     }

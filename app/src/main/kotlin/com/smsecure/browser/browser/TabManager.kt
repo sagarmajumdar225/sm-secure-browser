@@ -20,13 +20,13 @@ class TabManager(
 
     private val SUSPENSION_TIMEOUT_MS = 5 * 60 * 1000L // 5 minutes
 
-    fun createNewTab(url: String = ""): BrowserSession {
+    fun createNewTab(url: String = "", isEphemeral: Boolean = false): BrowserSession {
         checkAndSuspendInactiveTabs()
 
         val geckoSession = GeckoSession()
         geckoSession.open(GeckoRuntimeManager.getRuntime(context, adBlockingEnabled = adBlockingEnabled, torEnabled = torEnabled))
 
-        val browserSession = BrowserSession(session = geckoSession)
+        val browserSession = BrowserSession(session = geckoSession, isEphemeral = isEphemeral)
         browserSession.setupDelegates(context)
 
         if (url.isNotEmpty()) {
