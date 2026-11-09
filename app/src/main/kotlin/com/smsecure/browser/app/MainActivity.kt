@@ -35,8 +35,9 @@ class MainActivity : ComponentActivity() {
 
         themeManager = ThemeManager(applicationContext)
         val initialTor = runBlocking { themeManager.torEnabled.first() }
+        val initialAdBlock = runBlocking { themeManager.adBlockingEnabled.first() }
 
-        tabManager = TabManager(applicationContext, torEnabled = initialTor)
+        tabManager = TabManager(applicationContext, adBlockingEnabled = initialAdBlock, torEnabled = initialTor)
 
         if (tabManager.sessions.value.isEmpty()) {
             tabManager.createNewTab("https://duckduckgo.com")

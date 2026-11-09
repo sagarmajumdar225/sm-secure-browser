@@ -12,9 +12,14 @@ import timber.log.Timber
 object GeckoRuntimeManager {
     private var runtime: GeckoRuntime? = null
 
-    fun getRuntime(context: Context, mode: ContentBlockingMode = ContentBlockingMode.STRICT, torEnabled: Boolean = false): GeckoRuntime {
+    fun getRuntime(
+        context: Context,
+        adBlockingEnabled: Boolean = true,
+        torEnabled: Boolean = false
+    ): GeckoRuntime {
         if (runtime == null) {
             try {
+                val mode = if (adBlockingEnabled) ContentBlockingMode.STRICT else ContentBlockingMode.OFF
                 val settingsBuilder = GeckoRuntimeSettings.Builder()
                     // API: GeckoRuntimeSettings.Builder.arguments - RFP, HTTPS-Only, Cert Pinning, Tor Proxy
                     .arguments(FingerprintDefense.getProcessArguments(torEnabled))
@@ -35,7 +40,8 @@ object GeckoRuntimeManager {
         return runtime!!
     }
 
-    fun updateContentBlockingMode(mode: ContentBlockingMode) {
+    fun updateContentBlockingMode(adBlockingEnabled: Boolean) {
+        val mode = if (adBlockingEnabled) ContentBlockingMode.STRICT else ContentBlockingMode.OFF
         try {
             runtime?.settings?.contentBlocking?.let { cbSettings ->
                 val updated = EnginePrivacyConfig.createContentBlockingSettings(mode)

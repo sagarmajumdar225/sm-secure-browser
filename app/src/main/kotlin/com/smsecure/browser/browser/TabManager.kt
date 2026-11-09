@@ -7,7 +7,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.mozilla.geckoview.GeckoSession
 import org.mozilla.geckoview.StorageController
 
-class TabManager(private val context: Context, private val torEnabled: Boolean = false) {
+class TabManager(
+    private val context: Context,
+    private val adBlockingEnabled: Boolean = true,
+    private val torEnabled: Boolean = false
+) {
     private val _sessions = MutableStateFlow<List<BrowserSession>>(emptyList())
     val sessions: StateFlow<List<BrowserSession>> = _sessions.asStateFlow()
 
@@ -20,7 +24,7 @@ class TabManager(private val context: Context, private val torEnabled: Boolean =
         checkAndSuspendInactiveTabs()
 
         val geckoSession = GeckoSession()
-        geckoSession.open(GeckoRuntimeManager.getRuntime(context, torEnabled = torEnabled))
+        geckoSession.open(GeckoRuntimeManager.getRuntime(context, adBlockingEnabled = adBlockingEnabled, torEnabled = torEnabled))
 
         val browserSession = BrowserSession(session = geckoSession)
         browserSession.setupDelegates(context)
@@ -87,7 +91,7 @@ class TabManager(private val context: Context, private val torEnabled: Boolean =
 
     fun burnSession() {
         // API: StorageController.clearData(ClearFlags.ALL) - Wipes all cookies, storage, cache, and site data
-        GeckoRuntimeManager.getRuntime(context, torEnabled = torEnabled).storageController.clearData(StorageController.ClearFlags.ALL)
+        GeckoRuntimeManager.getRuntime(context, adBlockingEnabled = adBlockingEnabled, torEnabled = torEnabled).storageController.clearData(StorageController.ClearFlags.ALL)
 
         _sessions.value.forEach { it.session.close() }
         _sessions.value = emptyList()

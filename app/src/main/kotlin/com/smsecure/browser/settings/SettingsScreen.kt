@@ -26,6 +26,7 @@ fun SettingsScreen(
     val scope = rememberCoroutineScope()
     val themeManager = remember { ThemeManager(context) }
     val torEnabled by themeManager.torEnabled.collectAsState(initial = false)
+    val adBlockingEnabled by themeManager.adBlockingEnabled.collectAsState(initial = true)
 
     Scaffold(
         topBar = {
@@ -75,6 +76,43 @@ fun SettingsScreen(
                     scope.launch { themeManager.setThemeMode(ThemeMode.DARK) }
                 }
             )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Text(
+                text = "Ad-Blocking & Anti-Tracking",
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Enforce GeckoView ContentBlocking rules to block ads, analytics trackers, social scripts, and cryptominers.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = "Enable Ad-Blocking", style = MaterialTheme.typography.titleMedium)
+                    Text(text = "Active anti-tracking & ad filtering", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Switch(
+                    checked = adBlockingEnabled,
+                    onCheckedChange = { checked ->
+                        scope.launch {
+                            themeManager.setAdBlockingEnabled(checked)
+                            GeckoRuntimeManager.updateContentBlockingMode(checked)
+                        }
+                    }
+                )
+            }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
@@ -133,7 +171,7 @@ fun SettingsScreen(
                 selected = currentMode == ContentBlockingMode.STRICT,
                 onClick = {
                     onModeChanged(ContentBlockingMode.STRICT)
-                    GeckoRuntimeManager.updateContentBlockingMode(ContentBlockingMode.STRICT)
+                    GeckoRuntimeManager.updateContentBlockingMode(true)
                 }
             )
 
@@ -143,7 +181,7 @@ fun SettingsScreen(
                 selected = currentMode == ContentBlockingMode.STANDARD,
                 onClick = {
                     onModeChanged(ContentBlockingMode.STANDARD)
-                    GeckoRuntimeManager.updateContentBlockingMode(ContentBlockingMode.STANDARD)
+                    GeckoRuntimeManager.updateContentBlockingMode(true)
                 }
             )
 
@@ -153,7 +191,7 @@ fun SettingsScreen(
                 selected = currentMode == ContentBlockingMode.OFF,
                 onClick = {
                     onModeChanged(ContentBlockingMode.OFF)
-                    GeckoRuntimeManager.updateContentBlockingMode(ContentBlockingMode.OFF)
+                    GeckoRuntimeManager.updateContentBlockingMode(false)
                 }
             )
         }

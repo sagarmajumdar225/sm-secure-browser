@@ -19,6 +19,7 @@ enum class ThemeMode {
 class ThemeManager(private val context: Context) {
     private val THEME_KEY = stringPreferencesKey("app_theme_mode")
     private val TOR_KEY = booleanPreferencesKey("tor_proxy_enabled")
+    private val AD_BLOCK_KEY = booleanPreferencesKey("ad_blocking_enabled")
 
     val themeMode: Flow<ThemeMode> = context.dataStore.data.map { prefs ->
         when (prefs[THEME_KEY]) {
@@ -32,6 +33,10 @@ class ThemeManager(private val context: Context) {
         prefs[TOR_KEY] ?: false
     }
 
+    val adBlockingEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[AD_BLOCK_KEY] ?: true // Enabled by default
+    }
+
     suspend fun setThemeMode(mode: ThemeMode) {
         context.dataStore.edit { prefs ->
             prefs[THEME_KEY] = mode.name
@@ -41,6 +46,12 @@ class ThemeManager(private val context: Context) {
     suspend fun setTorEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[TOR_KEY] = enabled
+        }
+    }
+
+    suspend fun setAdBlockingEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[AD_BLOCK_KEY] = enabled
         }
     }
 }
