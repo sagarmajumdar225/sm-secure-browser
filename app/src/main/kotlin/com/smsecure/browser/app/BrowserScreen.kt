@@ -1,6 +1,8 @@
 package com.smsecure.browser.app
 
+import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -21,6 +23,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -62,6 +65,19 @@ fun BrowserScreen(
 
     val activeSession = remember(sessions, activeSessionId) {
         sessions.find { it.id == activeSessionId }
+    }
+
+    val canGoBackState = activeSession?.canGoBack?.collectAsState()?.value == true
+
+    // System Back Button Handling (GeckoSession history navigation or Tab Tray dismissal)
+    BackHandler(enabled = currentScreen == ScreenState.BROWSER) {
+        if (showTabTray) {
+            showTabTray = false
+        } else if (canGoBackState && activeSession != null) {
+            activeSession.goBack()
+        } else {
+            (context as? Activity)?.finish()
+        }
     }
 
     when (currentScreen) {
@@ -184,6 +200,7 @@ fun BrowserTopBar(
     var showShieldBottomSheet by remember { mutableStateOf(false) }
 
     var textFieldValue by remember(url) { mutableStateOf(url) }
+    var isUrlFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
     if (showShieldBottomSheet) {
@@ -198,7 +215,7 @@ fun BrowserTopBar(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding() // FIX: Adds proper top padding below the system status/notification bar
+            .statusBarsPadding()
             .background(MaterialTheme.colorScheme.surface)
     ) {
         Row(
@@ -207,20 +224,29 @@ fun BrowserTopBar(
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(
-                onClick = { session.goBack() },
-                enabled = canGoBack
-            ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            // Hide back button when typing in URL bar to give maximum width expansion
+            if (!isUrlFocused) {
+                IconButton(
+                    onClick = { session.goBack() },
+                    enabled = canGoBack
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
             }
 
-            // FIX: TextField expands horizontally to fill available space (weight(1f)) showing full link text
+            // Expandable URL/Search Bar with focus state tracking
             TextField(
                 value = textFieldValue,
                 onValueChange = { textFieldValue = it },
                 modifier = Modifier
                     .weight(1f)
-                    .height(52.dp),
+                    .height(52.dp)
+                    .onFocusChanged { state ->
+                        isUrlFocused = state.isFocused
+                        if (state.isFocused && textFieldValue.isEmpty()) {
+                            textFieldValue = url
+                        }
+                    },
                 singleLine = true,
                 shape = RoundedCornerShape(24.dp),
                 colors = TextFieldDefaults.colors(
