@@ -3,6 +3,8 @@ package com.smsecure.browser.settings
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -29,6 +31,7 @@ fun SettingsScreen(
     val themeManager = remember { ThemeManager(context) }
     val torEnabled by themeManager.torEnabled.collectAsState(initial = false)
     val adBlockingEnabled by themeManager.adBlockingEnabled.collectAsState(initial = true)
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
@@ -46,6 +49,7 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(scrollState) // FIX: Makes the entire settings panel fully scrollable
                 .padding(16.dp)
         ) {
             Text(
@@ -198,7 +202,7 @@ fun SettingsScreen(
             )
 
             // Settings Panel Footer Branding
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
