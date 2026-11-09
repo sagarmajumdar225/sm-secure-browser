@@ -44,6 +44,7 @@ enum class ScreenState {
     BROWSER,
     HISTORY,
     BOOKMARKS,
+    PASSWORDS,
     SETTINGS
 }
 
@@ -101,6 +102,13 @@ fun BrowserScreen(
                 onBack = { currentScreen = ScreenState.BROWSER }
             )
         }
+        ScreenState.PASSWORDS -> {
+            PasswordManagerScreen(
+                passwordDao = db.passwordDao(),
+                currentUrl = activeSession?.url?.value ?: "",
+                onBack = { currentScreen = ScreenState.BROWSER }
+            )
+        }
         ScreenState.SETTINGS -> {
             SettingsScreen(
                 currentMode = currentProtectionMode,
@@ -122,6 +130,7 @@ fun BrowserScreen(
                             onOpenTabTray = { showTabTray = true },
                             onOpenHistory = { currentScreen = ScreenState.HISTORY },
                             onOpenBookmarks = { currentScreen = ScreenState.BOOKMARKS },
+                            onOpenPasswords = { currentScreen = ScreenState.PASSWORDS },
                             onOpenSettings = { currentScreen = ScreenState.SETTINGS },
                             onBurnSession = {
                                 tabManager.burnSession()
@@ -183,6 +192,7 @@ fun BrowserTopBar(
     onOpenTabTray: () -> Unit,
     onOpenHistory: () -> Unit,
     onOpenBookmarks: () -> Unit,
+    onOpenPasswords: () -> Unit,
     onOpenSettings: () -> Unit,
     onBurnSession: () -> Unit
 ) {
@@ -341,6 +351,13 @@ fun BrowserTopBar(
                             }
                         )
                     }
+                    DropdownMenuItem(
+                        text = { Text("Passwords") },
+                        onClick = {
+                            menuExpanded = false
+                            onOpenPasswords()
+                        }
+                    )
                     DropdownMenuItem(
                         text = { Text("Burn Session") },
                         onClick = {

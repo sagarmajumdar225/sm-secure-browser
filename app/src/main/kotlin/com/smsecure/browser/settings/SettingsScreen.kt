@@ -1,5 +1,7 @@
 package com.smsecure.browser.settings
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -194,6 +196,28 @@ fun SettingsScreen(
                     GeckoRuntimeManager.updateContentBlockingMode(false)
                 }
             )
+
+            // Settings Panel Footer Branding
+            Spacer(modifier = Modifier.weight(1f))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                TextButton(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sagarmajumdar.in"))
+                        context.startActivity(intent)
+                    }
+                ) {
+                    Text(
+                        text = "Made and secured by SM Secure Studio",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         }
     }
 }

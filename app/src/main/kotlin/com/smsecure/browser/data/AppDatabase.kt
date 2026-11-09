@@ -8,14 +8,15 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import timber.log.Timber
 
 @Database(
-    entities = [HistoryEntity::class, BookmarkEntity::class, SiteExceptionEntity::class],
-    version = 1,
+    entities = [HistoryEntity::class, BookmarkEntity::class, SiteExceptionEntity::class, PasswordEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun historyDao(): HistoryDao
     abstract fun bookmarkDao(): BookmarkDao
     abstract fun siteExceptionDao(): SiteExceptionDao
+    abstract fun passwordDao(): PasswordDao
 
     companion object {
         @Volatile
@@ -38,6 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "sm_secure_browser.db"
                 )
                     .openHelperFactory(factory)
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

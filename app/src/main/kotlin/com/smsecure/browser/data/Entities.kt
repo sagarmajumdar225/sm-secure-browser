@@ -26,3 +26,12 @@ data class SiteExceptionEntity(
     val allowStorage: Boolean = false,
     val allowScripts: Boolean = true
 )
+
+@Entity(tableName = "passwords")
+data class PasswordEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val domain: String,
+    val username: String,
+    val password: String,
+    val timestamp: Long = System.currentTimeMillis()
+)

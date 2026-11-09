@@ -53,3 +53,21 @@ interface SiteExceptionDao {
     @Query("DELETE FROM site_exceptions WHERE domain = :domain")
     suspend fun deleteByDomain(domain: String)
 }
+
+@Dao
+interface PasswordDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(password: PasswordEntity)
+
+    @Query("SELECT * FROM passwords WHERE domain = :domain")
+    fun getForDomain(domain: String): Flow<List<PasswordEntity>>
+
+    @Query("SELECT * FROM passwords ORDER BY timestamp DESC")
+    fun getAll(): Flow<List<PasswordEntity>>
+
+    @Query("DELETE FROM passwords WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
+    @Query("DELETE FROM passwords")
+    suspend fun clearAll()
+}
