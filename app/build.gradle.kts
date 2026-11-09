@@ -21,10 +21,11 @@ android {
 
   splits {
     abi {
-      isEnable = true
+      // Enable ABI splits for release builds only; disable for debug builds to ensure stable universal testing APK
+      isEnable = project.gradle.startParameter.taskNames.any { it.contains("Release", ignoreCase = true) }
       reset()
       include("arm64-v8a", "armeabi-v7a", "x86_64")
-      isUniversalApk = false
+      isUniversalApk = true
     }
   }
 
@@ -79,6 +80,7 @@ android {
   }
   packaging {
     jniLibs {
+      // useLegacyPackaging = true paired with android:extractNativeLibs="true" prevents SIGSEGV native crashes in GeckoView
       useLegacyPackaging = true
       keepDebugSymbols.clear()
     }
