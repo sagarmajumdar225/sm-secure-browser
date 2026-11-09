@@ -11,7 +11,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
@@ -199,6 +198,7 @@ fun BrowserTopBar(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .statusBarsPadding() // FIX: Adds proper top padding below the system status/notification bar
             .background(MaterialTheme.colorScheme.surface)
     ) {
         Row(
@@ -214,24 +214,7 @@ fun BrowserTopBar(
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
 
-            IconButton(
-                onClick = { session.goForward() },
-                enabled = canGoForward
-            ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Forward")
-            }
-
-            IconButton(
-                onClick = {
-                    if (isLoading) session.stop() else session.reload()
-                }
-            ) {
-                Icon(
-                    imageVector = if (isLoading) Icons.Default.Close else Icons.Default.Refresh,
-                    contentDescription = if (isLoading) "Stop" else "Reload"
-                )
-            }
-
+            // FIX: TextField expands horizontally to fill available space (weight(1f)) showing full link text
             TextField(
                 value = textFieldValue,
                 onValueChange = { textFieldValue = it },
@@ -316,6 +299,22 @@ fun BrowserTopBar(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false }
                 ) {
+                    DropdownMenuItem(
+                        text = { Text(if (isLoading) "Stop" else "Reload") },
+                        onClick = {
+                            menuExpanded = false
+                            if (isLoading) session.stop() else session.reload()
+                        }
+                    )
+                    if (canGoForward) {
+                        DropdownMenuItem(
+                            text = { Text("Forward") },
+                            onClick = {
+                                menuExpanded = false
+                                session.goForward()
+                            }
+                        )
+                    }
                     DropdownMenuItem(
                         text = { Text("Burn Session") },
                         onClick = {
